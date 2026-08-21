@@ -18,7 +18,8 @@ type Client struct {
 }
 
 type HTTPError struct {
-	Status string
+	StatusCode int
+	Status     string
 }
 
 func (e *HTTPError) Error() string {
@@ -75,7 +76,7 @@ func (c *Client) get(ctx context.Context, endpoint string) ([]byte, error) {
 		return nil, err
 	}
 	if resp.StatusCode/100 != 2 {
-		return nil, &HTTPError{Status: resp.Status}
+		return nil, &HTTPError{StatusCode: resp.StatusCode, Status: resp.Status}
 	}
 	return body, nil
 }

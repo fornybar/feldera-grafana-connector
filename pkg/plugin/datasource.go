@@ -80,13 +80,13 @@ func (d *Datasource) query(ctx context.Context, query backend.DataQuery) backend
 
 	body, err := d.client.QueryArrow(ctx, pipeline, sql)
 	if err != nil {
-		return backend.ErrDataResponse(backend.StatusBadGateway, err.Error())
+		return felderaQueryError(err)
 	}
 	frame, err := frameFromFelderaArrow(body)
 	if err != nil {
 		body, jsonErr := d.client.Query(ctx, pipeline, sql)
 		if jsonErr != nil {
-			return backend.ErrDataResponse(backend.StatusBadGateway, jsonErr.Error())
+			return felderaQueryError(jsonErr)
 		}
 		frame, err = frameFromFelderaJSON(body)
 		if err != nil {

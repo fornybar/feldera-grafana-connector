@@ -4,6 +4,7 @@
 
 - Upgrade Grafana 13 development tooling and remove deprecated dependency chains.
 - Add builder time-column filtering with Grafana range macros.
+- Classify Feldera query failures into safe Grafana errors.
 
 ## 0.0.4
 
