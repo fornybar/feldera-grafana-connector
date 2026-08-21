@@ -6,6 +6,7 @@ const config = require('./.config/jest.config');
 
 module.exports = {
   ...config,
+  testEnvironment: 'node',
   moduleNameMapper: {
     ...config.moduleNameMapper,
     '^@grafana/runtime$': '<rootDir>/src/test/runtime.ts',

@@ -1,2 +1,1 @@
-// Jest setup provided by Grafana scaffolding
-import './.config/jest-setup';
+// Node-based unit tests need no global setup.
