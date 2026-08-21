@@ -51,6 +51,7 @@ export function ViewSelector({ datasource, pipeline, value, onSelect, onViewsLoa
       <InlineField label="View" labelWidth={14} tooltip="Pipeline output views available for querying">
         <Select
           inputId="query-editor-view"
+          width={40}
           isDisabled={!pipeline}
           value={value}
           options={options}

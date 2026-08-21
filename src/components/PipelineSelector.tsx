@@ -39,6 +39,7 @@ export function PipelineSelector({ datasource, value, onChange }: Props) {
       <InlineField label="Pipeline" labelWidth={14} tooltip="Empty uses datasource default pipeline">
         <Select
           inputId="query-editor-pipeline"
+          width={40}
           value={value ?? ''}
           options={options}
           isClearable

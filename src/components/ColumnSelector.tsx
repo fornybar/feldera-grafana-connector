@@ -21,6 +21,7 @@ export function ColumnSelector({ columns, value = [], onChange }: Props) {
     <InlineField label="Columns" labelWidth={14} tooltip="Columns in selected materialized view">
       <Select
         inputId="query-editor-columns"
+        width={40}
         isDisabled={columns.length === 0}
         isMulti
         options={options}

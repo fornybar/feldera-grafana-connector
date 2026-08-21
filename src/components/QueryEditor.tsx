@@ -1,6 +1,6 @@
 import React, { useCallback, useState } from 'react';
 import { QueryEditorProps } from '@grafana/data';
-import { Button, CodeEditor, InlineField, Select, Tooltip } from '@grafana/ui';
+import { Button, CodeEditor, Divider, InlineField, Select, Stack, Text, Tooltip } from '@grafana/ui';
 import { DataSource } from '../datasource';
 import { FelderaColumn, FelderaOptions, FelderaQuery, FelderaView } from '../types';
 import { buildSelectQuery } from '../queryBuilder';
@@ -21,7 +21,8 @@ export function QueryEditor({ datasource, query, onChange, onRunQuery }: Props) 
   }, [query.view, selectedPipeline]);
 
   return (
-    <>
+    <Stack direction="column" gap={2}>
+      <Text element="h6" color="secondary">Build query</Text>
       <PipelineSelector datasource={datasource} value={query.pipeline} onChange={(pipeline) => update({ pipeline, view: undefined, columns: undefined, timeColumn: undefined })} />
       {!query.pipeline && datasource.defaultPipeline && <div>Using datasource default: {datasource.defaultPipeline}</div>}
       <ViewSelector
@@ -38,6 +39,7 @@ export function QueryEditor({ datasource, query, onChange, onRunQuery }: Props) 
       <InlineField label="Time column" labelWidth={14} tooltip="Adds Grafana time-range macros when generating a query">
         <Select
           isClearable
+          width={40}
           isDisabled={!selectedView}
           options={(selectedView?.columns ?? []).map((column) => ({ label: column.name, value: column.name }))}
           value={query.timeColumn}
@@ -48,6 +50,8 @@ export function QueryEditor({ datasource, query, onChange, onRunQuery }: Props) 
       <Button variant="secondary" disabled={!selectedView} onClick={() => update({ queryText: buildSelectQuery(selectedView?.name, query.columns, query.timeColumn) })}>
         Generate query
       </Button>
+      <Divider spacing={1} />
+      <Text element="h6" color="secondary">Query</Text>
       <CodeEditor
         width=""
         height="180px"
@@ -63,6 +67,6 @@ export function QueryEditor({ datasource, query, onChange, onRunQuery }: Props) 
           Run query
         </Button>
       </Tooltip>
-    </>
+    </Stack>
   );
 }
