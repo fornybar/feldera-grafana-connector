@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.0.7
+
+- Simplify the query builder and add optional generated time constraints.
+
 ## 0.0.6
 
 - Release guided query builder, managed alerting, typed Arrow results, and safer error handling.
