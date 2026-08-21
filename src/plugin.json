@@ -1,0 +1,36 @@
+{
+  "$schema": "https://raw.githubusercontent.com/grafana/grafana/main/docs/sources/developers/plugins/plugin.schema.json",
+  "type": "datasource",
+  "name": "Feldera Datasource Connector",
+  "id": "feldera-datasource-connector",
+  "metrics": true,
+  "backend": true,
+  "executable": "feldera_datasource_connector",
+  "info": {
+    "description": "Backend-enabled Grafana datasource for Feldera.",
+    "author": {
+      "name": "Fornybar"
+    },
+    "keywords": ["feldera", "datasource"],
+    "logos": {
+      "small": "img/logo.svg",
+      "large": "img/logo.svg"
+    },
+    "links": [
+      {
+        "name": "Website",
+        "url": "https://feldera.com"
+      },
+      {
+        "name": "Repository",
+        "url": "https://github.com/fornybar/feldera-grafana-connector"
+      }
+    ],
+    "version": "%VERSION%",
+    "updated": "%TODAY%"
+  },
+  "dependencies": {
+    "grafanaDependency": ">=10.4.0",
+    "plugins": []
+  }
+}

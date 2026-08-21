@@ -1,0 +1,15 @@
+apiVersion: 1
+
+datasources:
+  - name: 'feldera'
+    type: 'feldera-datasource-connector'
+    access: proxy
+    isDefault: false
+    orgId: 1
+    version: 1
+    editable: true
+    jsonData:
+      baseUrl: 'http://feldera:8080'
+      pipeline: 'grafana'
+    secureJsonData:
+      apiKey: ''
