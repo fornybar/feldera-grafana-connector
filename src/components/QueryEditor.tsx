@@ -1,6 +1,6 @@
 import React, { useCallback, useState } from 'react';
 import { QueryEditorProps } from '@grafana/data';
-import { Button, CodeEditor, InlineField, Input, Select, Tooltip } from '@grafana/ui';
+import { Button, CodeEditor, InlineField, Tooltip } from '@grafana/ui';
 import { DataSource } from '../datasource';
 import { FelderaColumn, FelderaOptions, FelderaQuery, FelderaView } from '../types';
 import { buildSelectQuery } from '../queryBuilder';
@@ -12,8 +12,6 @@ type Props = QueryEditorProps<DataSource, FelderaQuery, FelderaOptions>;
 
 export function QueryEditor({ datasource, query, onChange, onRunQuery }: Props) {
   const [selectedViewState, setSelectedViewState] = useState<{ pipeline?: string; view?: FelderaView }>({});
-  const mode = query.mode ?? 'sql';
-  const limit = query.limit ?? 100;
   const selectedPipeline = query.pipeline || datasource.defaultPipeline;
   const selectedView = selectedViewState.pipeline === selectedPipeline ? selectedViewState.view : undefined;
   const update = (patch: Partial<FelderaQuery>) => onChange({ ...query, ...patch });
@@ -22,74 +20,36 @@ export function QueryEditor({ datasource, query, onChange, onRunQuery }: Props) 
     setSelectedViewState({ pipeline: selectedPipeline, view: views.find((view) => view.name === query.view) });
   }, [query.view, selectedPipeline]);
 
-  const updateBuilderQuery = (
-    patch: Partial<FelderaQuery>,
-    view = selectedView,
-    columns = query.columns ?? [],
-    nextLimit = limit,
-    timeColumn = query.timeColumn
-  ) => {
-    update({ ...patch, queryText: buildSelectQuery(view?.name, columns, nextLimit, timeColumn) });
-  };
-
-  const selectView = (view: FelderaView) => {
-    setSelectedViewState({ pipeline: selectedPipeline, view });
-    updateBuilderQuery({ view: view.name, columns: [], timeColumn: undefined }, view, [], limit, undefined);
-  };
-
-  const selectColumns = (columns: FelderaColumn[]) => {
-    updateBuilderQuery({ columns: columns.map((column) => column.name) }, selectedView, columns.map((column) => column.name));
-  };
-
-  const appendMacro = (macro: string) => {
+  const insert = (text: string) => {
     const separator = query.queryText?.trim() ? '\n' : '';
-    update({ queryText: `${query.queryText ?? ''}${separator}${macro}` });
+    update({ queryText: `${query.queryText ?? ''}${separator}${text}` });
   };
 
   return (
     <>
-      <InlineField label="Mode" labelWidth={14}>
-        <>
-          <Button variant={mode === 'sql' ? 'primary' : 'secondary'} onClick={() => update({ mode: 'sql' })}>SQL</Button>
-          <Button variant={mode === 'builder' ? 'primary' : 'secondary'} onClick={() => update({ mode: 'builder' })}>Builder</Button>
-        </>
-      </InlineField>
       <PipelineSelector datasource={datasource} value={query.pipeline} onChange={(pipeline) => update({ pipeline, view: undefined, columns: undefined })} />
       {!query.pipeline && datasource.defaultPipeline && <div>Using datasource default: {datasource.defaultPipeline}</div>}
-      {mode === 'builder' && (
+      <ViewSelector
+        datasource={datasource}
+        pipeline={selectedPipeline}
+        value={query.view}
+        onSelect={(view) => {
+          setSelectedViewState({ pipeline: selectedPipeline, view });
+          update({ view: view.name, columns: [] });
+        }}
+        onViewsLoaded={rehydrateView}
+      />
+      <ColumnSelector columns={selectedView?.columns ?? []} value={query.columns} onChange={(columns: FelderaColumn[]) => update({ columns: columns.map((column) => column.name) })} />
+      <InlineField label="Insert" labelWidth={14}>
         <>
-          <ViewSelector datasource={datasource} pipeline={selectedPipeline} value={query.view} onSelect={selectView} onViewsLoaded={rehydrateView} />
-          <ColumnSelector columns={selectedView?.columns ?? []} value={query.columns} onChange={selectColumns} />
-          <InlineField label="Time column" labelWidth={14} tooltip="Applies $__timeFrom() and $__timeTo() to this column">
-            <Select
-              isClearable
-              options={(selectedView?.columns ?? []).map((column) => ({ label: column.name, value: column.name }))}
-              value={query.timeColumn}
-              placeholder="No time filter"
-              onChange={(option) => updateBuilderQuery({ timeColumn: option?.value }, selectedView, query.columns ?? [], limit, option?.value)}
-            />
-          </InlineField>
-          <InlineField label="Limit" labelWidth={14}>
-            <Input
-              type="number"
-              min={1}
-              value={limit}
-              onChange={(event) => {
-                const nextLimit = Math.max(1, Number(event.currentTarget.value) || 1);
-                updateBuilderQuery({ limit: nextLimit }, selectedView, query.columns ?? [], nextLimit);
-              }}
-            />
-          </InlineField>
+          <Button variant="secondary" onClick={() => insert('LIMIT 100')}>Limit</Button>
+          <Button variant="secondary" onClick={() => insert('$__timeFrom()')}>From time</Button>
+          <Button variant="secondary" onClick={() => insert('$__timeTo()')}>To time</Button>
         </>
-      )}
-      {mode === 'sql' && (
-        <InlineField label="Insert" labelWidth={14}>
-          <>
-            <Button variant="secondary" onClick={() => appendMacro('$__timeFrom()')}>From time</Button>
-            <Button variant="secondary" onClick={() => appendMacro('$__timeTo()')}>To time</Button>
-          </>
-        </InlineField>
-      )}
+      </InlineField>
+      <Button variant="secondary" disabled={!selectedView} onClick={() => update({ queryText: buildSelectQuery(selectedView?.name, query.columns) })}>
+        Generate SQL
+      </Button>
       <CodeEditor
         width=""
         height="180px"
