@@ -1,6 +1,6 @@
 import React, { useCallback, useState } from 'react';
 import { QueryEditorProps } from '@grafana/data';
-import { Button, CodeEditor, InlineField, Input, Tooltip } from '@grafana/ui';
+import { Button, CodeEditor, InlineField, Input, Select, Tooltip } from '@grafana/ui';
 import { DataSource } from '../datasource';
 import { FelderaColumn, FelderaOptions, FelderaQuery, FelderaView } from '../types';
 import { buildSelectQuery } from '../queryBuilder';
@@ -22,13 +22,19 @@ export function QueryEditor({ datasource, query, onChange, onRunQuery }: Props) 
     setSelectedViewState({ pipeline: selectedPipeline, view: views.find((view) => view.name === query.view) });
   }, [query.view, selectedPipeline]);
 
-  const updateBuilderQuery = (patch: Partial<FelderaQuery>, view = selectedView, columns = query.columns ?? [], nextLimit = limit) => {
-    update({ ...patch, queryText: buildSelectQuery(view?.name, columns, nextLimit) });
+  const updateBuilderQuery = (
+    patch: Partial<FelderaQuery>,
+    view = selectedView,
+    columns = query.columns ?? [],
+    nextLimit = limit,
+    timeColumn = query.timeColumn
+  ) => {
+    update({ ...patch, queryText: buildSelectQuery(view?.name, columns, nextLimit, timeColumn) });
   };
 
   const selectView = (view: FelderaView) => {
     setSelectedViewState({ pipeline: selectedPipeline, view });
-    updateBuilderQuery({ view: view.name, columns: [] }, view, []);
+    updateBuilderQuery({ view: view.name, columns: [], timeColumn: undefined }, view, [], limit, undefined);
   };
 
   const selectColumns = (columns: FelderaColumn[]) => {
@@ -54,6 +60,15 @@ export function QueryEditor({ datasource, query, onChange, onRunQuery }: Props) 
         <>
           <ViewSelector datasource={datasource} pipeline={selectedPipeline} value={query.view} onSelect={selectView} onViewsLoaded={rehydrateView} />
           <ColumnSelector columns={selectedView?.columns ?? []} value={query.columns} onChange={selectColumns} />
+          <InlineField label="Time column" labelWidth={14} tooltip="Applies $__timeFrom() and $__timeTo() to this column">
+            <Select
+              isClearable
+              options={(selectedView?.columns ?? []).map((column) => ({ label: column.name, value: column.name }))}
+              value={query.timeColumn}
+              placeholder="No time filter"
+              onChange={(option) => updateBuilderQuery({ timeColumn: option?.value }, selectedView, query.columns ?? [], limit, option?.value)}
+            />
+          </InlineField>
           <InlineField label="Limit" labelWidth={14}>
             <Input
               type="number"
