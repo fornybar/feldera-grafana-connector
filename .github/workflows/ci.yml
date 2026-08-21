@@ -8,6 +8,10 @@ on:
 permissions:
   contents: read
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   verify:
     runs-on: ubuntu-latest
@@ -25,8 +29,27 @@ jobs:
       - run: npm run lint
       - run: npm run test:ci
       - run: npm run typecheck
-      - run: npm run build
-      - run: go run github.com/magefile/mage -v build:backend
+      - run: npm run package
+      - name: Verify plugin archive
+        run: |
+          python3 - <<'PY'
+          import json
+          import pathlib
+          import zipfile
+
+          package = json.load(open('package.json'))
+          plugin_id = 'feldera-datasource-connector'
+          version = package['version']
+          archive = pathlib.Path(f'artifacts/{plugin_id}-{version}.zip')
+          assert archive.is_file(), f'missing {archive}'
+          with zipfile.ZipFile(archive) as zipped:
+              names = set(zipped.namelist())
+              assert f'{plugin_id}/plugin.json' in names
+              assert f'{plugin_id}/feldera_datasource_connector_linux_amd64' in names
+              plugin = json.loads(zipped.read(f'{plugin_id}/plugin.json'))
+              assert plugin['id'] == plugin_id
+              assert plugin['info']['version'] == version
+          PY
 
   release:
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
