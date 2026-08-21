@@ -53,7 +53,7 @@ export function QueryEditor({ datasource, query, onChange, onRunQuery }: Props) 
       <Divider spacing={1} />
       <Text element="h6" color="secondary">Query</Text>
       <CodeEditor
-        width="80%"
+        width="100%"
         height="180px"
         language="sql"
         value={query.queryText ?? ''}
