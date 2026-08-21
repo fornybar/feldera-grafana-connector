@@ -12,7 +12,6 @@ import (
 	"github.com/grafana/grafana-plugin-sdk-go/backend/log"
 	"github.com/grafana/grafana-plugin-sdk-go/data"
 	"github.com/grafana/infinity-libs/lib/go/jsonframer"
-	"github.com/mattetti/filebuffer"
 )
 
 // Arrow preserves native query result types.
@@ -21,28 +20,9 @@ func frameFromFelderaArrow(body []byte) (*data.Frame, error) {
 		return nil, nil
 	}
 
-	fileReader, fileErr := ipc.NewFileReader(filebuffer.New(body))
-	if fileErr == nil {
-		defer fileReader.Close()
-		var frame *data.Frame
-		for index := 0; index < fileReader.NumRecords(); index++ {
-			record, err := fileReader.Record(index)
-			if err != nil {
-				return nil, fmt.Errorf("read Feldera Arrow IPC file: %w", err)
-			}
-			frame, err = appendArrowRecord(frame, record)
-			record.Release()
-			if err != nil {
-				return nil, fmt.Errorf("convert Feldera Arrow record: %w", err)
-			}
-		}
-		log.DefaultLogger.Info("Decoded Feldera Arrow result", "transport", "file", "recordBatches", fileReader.NumRecords())
-		return frame, nil
-	}
-
-	reader, streamErr := ipc.NewReader(bytes.NewReader(body))
-	if streamErr != nil {
-		return nil, fmt.Errorf("decode Feldera Arrow IPC: %w", fileErr)
+	reader, err := ipc.NewReader(bytes.NewReader(body))
+	if err != nil {
+		return nil, fmt.Errorf("decode Feldera Arrow IPC stream: %w", err)
 	}
 	defer reader.Release()
 	var frame *data.Frame

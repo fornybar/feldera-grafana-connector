@@ -8,7 +8,6 @@ require (
 	github.com/apache/arrow-go/v18 v18.0.1-0.20241212180703-82be143d7c30
 	github.com/grafana/grafana-plugin-sdk-go v0.263.0
 	github.com/grafana/infinity-libs/lib/go/jsonframer v1.1.4
-	github.com/mattetti/filebuffer v1.0.1
 )
 
 require (
@@ -50,6 +49,7 @@ require (
 	github.com/klauspost/cpuid/v2 v2.2.9 // indirect
 	github.com/magefile/mage v1.15.0 // indirect
 	github.com/mailru/easyjson v0.7.7 // indirect
+	github.com/mattetti/filebuffer v1.0.1 // indirect
 	github.com/mattn/go-colorable v0.1.13 // indirect
 	github.com/mattn/go-isatty v0.0.20 // indirect
 	github.com/mattn/go-runewidth v0.0.15 // indirect

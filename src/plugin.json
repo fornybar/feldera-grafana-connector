@@ -5,6 +5,7 @@
   "id": "feldera-datasource-connector",
   "metrics": true,
   "backend": true,
+  "alerting": true,
   "executable": "feldera_datasource_connector",
   "info": {
     "description": "Backend-enabled Grafana datasource for Feldera.",
