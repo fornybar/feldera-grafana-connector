@@ -48,10 +48,10 @@ export function QueryEditor({ datasource, query, onChange, onRunQuery }: Props) 
           <Button variant={mode === 'builder' ? 'primary' : 'secondary'} onClick={() => update({ mode: 'builder' })}>Builder</Button>
         </>
       </InlineField>
+      <PipelineSelector datasource={datasource} value={query.pipeline} onChange={(pipeline) => update({ pipeline, view: undefined, columns: undefined })} />
+      {!query.pipeline && datasource.defaultPipeline && <div>Using datasource default: {datasource.defaultPipeline}</div>}
       {mode === 'builder' && (
         <>
-          <PipelineSelector datasource={datasource} value={query.pipeline} onChange={(pipeline) => update({ pipeline, view: undefined, columns: undefined })} />
-          {!query.pipeline && datasource.defaultPipeline && <div>Using datasource default: {datasource.defaultPipeline}</div>}
           <ViewSelector datasource={datasource} pipeline={selectedPipeline} value={query.view} onSelect={selectView} onViewsLoaded={rehydrateView} />
           <ColumnSelector columns={selectedView?.columns ?? []} value={query.columns} onChange={selectColumns} />
           <InlineField label="Limit" labelWidth={14}>

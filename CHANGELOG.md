@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.0.4
+
+- Keep pipeline selection available in SQL and builder modes.
+
 ## 0.0.3
 
 - Add SQL and guided builder query modes.
