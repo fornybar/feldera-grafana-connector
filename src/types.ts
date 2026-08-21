@@ -6,6 +6,7 @@ export interface FelderaQuery extends DataQuery {
   pipeline?: string;
   view?: string;
   columns?: string[];
+  timeColumn?: string;
 }
 
 export interface FelderaColumn {

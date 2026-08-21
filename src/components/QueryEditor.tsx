@@ -1,6 +1,6 @@
 import React, { useCallback, useState } from 'react';
 import { QueryEditorProps } from '@grafana/data';
-import { Button, CodeEditor, InlineField, Tooltip } from '@grafana/ui';
+import { Button, CodeEditor, InlineField, Select, Tooltip } from '@grafana/ui';
 import { DataSource } from '../datasource';
 import { FelderaColumn, FelderaOptions, FelderaQuery, FelderaView } from '../types';
 import { buildSelectQuery } from '../queryBuilder';
@@ -20,14 +20,9 @@ export function QueryEditor({ datasource, query, onChange, onRunQuery }: Props) 
     setSelectedViewState({ pipeline: selectedPipeline, view: views.find((view) => view.name === query.view) });
   }, [query.view, selectedPipeline]);
 
-  const insert = (text: string) => {
-    const separator = query.queryText?.trim() ? '\n' : '';
-    update({ queryText: `${query.queryText ?? ''}${separator}${text}` });
-  };
-
   return (
     <>
-      <PipelineSelector datasource={datasource} value={query.pipeline} onChange={(pipeline) => update({ pipeline, view: undefined, columns: undefined })} />
+      <PipelineSelector datasource={datasource} value={query.pipeline} onChange={(pipeline) => update({ pipeline, view: undefined, columns: undefined, timeColumn: undefined })} />
       {!query.pipeline && datasource.defaultPipeline && <div>Using datasource default: {datasource.defaultPipeline}</div>}
       <ViewSelector
         datasource={datasource}
@@ -35,20 +30,23 @@ export function QueryEditor({ datasource, query, onChange, onRunQuery }: Props) 
         value={query.view}
         onSelect={(view) => {
           setSelectedViewState({ pipeline: selectedPipeline, view });
-          update({ view: view.name, columns: [] });
+          update({ view: view.name, columns: [], timeColumn: undefined });
         }}
         onViewsLoaded={rehydrateView}
       />
       <ColumnSelector columns={selectedView?.columns ?? []} value={query.columns} onChange={(columns: FelderaColumn[]) => update({ columns: columns.map((column) => column.name) })} />
-      <InlineField label="Insert" labelWidth={14}>
-        <>
-          <Button variant="secondary" onClick={() => insert('LIMIT 100')}>Limit</Button>
-          <Button variant="secondary" onClick={() => insert('$__timeFrom()')}>From time</Button>
-          <Button variant="secondary" onClick={() => insert('$__timeTo()')}>To time</Button>
-        </>
+      <InlineField label="Time column" labelWidth={14} tooltip="Adds Grafana time-range macros when generating a query">
+        <Select
+          isClearable
+          isDisabled={!selectedView}
+          options={(selectedView?.columns ?? []).map((column) => ({ label: column.name, value: column.name }))}
+          value={query.timeColumn}
+          placeholder="No time constraint"
+          onChange={(option) => update({ timeColumn: option?.value })}
+        />
       </InlineField>
-      <Button variant="secondary" disabled={!selectedView} onClick={() => update({ queryText: buildSelectQuery(selectedView?.name, query.columns) })}>
-        Generate SQL
+      <Button variant="secondary" disabled={!selectedView} onClick={() => update({ queryText: buildSelectQuery(selectedView?.name, query.columns, query.timeColumn) })}>
+        Generate query
       </Button>
       <CodeEditor
         width=""
