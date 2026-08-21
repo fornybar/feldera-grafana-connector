@@ -21,7 +21,7 @@ export function QueryEditor({ datasource, query, onChange, onRunQuery }: Props) 
   }, [query.view, selectedPipeline]);
 
   return (
-    <Stack direction="column" gap={2}>
+    <Stack direction="column" gap={2} alignItems="flex-start">
       <Text element="h6" color="secondary">Build query</Text>
       <PipelineSelector datasource={datasource} value={query.pipeline} onChange={(pipeline) => update({ pipeline, view: undefined, columns: undefined, timeColumn: undefined })} />
       {!query.pipeline && datasource.defaultPipeline && <div>Using datasource default: {datasource.defaultPipeline}</div>}
@@ -36,7 +36,7 @@ export function QueryEditor({ datasource, query, onChange, onRunQuery }: Props) 
         onViewsLoaded={rehydrateView}
       />
       <ColumnSelector columns={selectedView?.columns ?? []} value={query.columns} onChange={(columns: FelderaColumn[]) => update({ columns: columns.map((column) => column.name) })} />
-      <InlineField label="Time column" labelWidth={14} tooltip="Adds Grafana time-range macros when generating a query">
+      <InlineField label="Time" labelWidth={14} tooltip="Optional time column. Adds Grafana time-range macros when generating a query.">
         <Select
           isClearable
           width={40}
@@ -53,7 +53,7 @@ export function QueryEditor({ datasource, query, onChange, onRunQuery }: Props) 
       <Divider spacing={1} />
       <Text element="h6" color="secondary">Query</Text>
       <CodeEditor
-        width=""
+        width="80%"
         height="180px"
         language="sql"
         value={query.queryText ?? ''}
