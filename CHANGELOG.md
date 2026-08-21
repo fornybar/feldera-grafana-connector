@@ -1,12 +1,9 @@
 # Changelog
 
-## 0.0.6
-
-- Add builder time-column filtering with Grafana range macros.
-
 ## 0.0.5
 
 - Upgrade Grafana 13 development tooling and remove deprecated dependency chains.
+- Add builder time-column filtering with Grafana range macros.
 
 ## 0.0.4
 
