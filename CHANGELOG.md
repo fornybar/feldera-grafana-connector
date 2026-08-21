@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.0.6
+
+- Release guided query builder, managed alerting, typed Arrow results, and safer error handling.
+
 ## 0.0.5
 
 - Upgrade Grafana 13 development tooling and remove deprecated dependency chains.
