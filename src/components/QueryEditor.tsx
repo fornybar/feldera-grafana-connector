@@ -24,7 +24,7 @@ export function QueryEditor({ datasource, query, onChange, onRunQuery }: Props) 
     <Stack direction="column" gap={2} alignItems="flex-start">
       <Text element="h6" color="secondary">Build query</Text>
       <PipelineSelector datasource={datasource} value={query.pipeline} onChange={(pipeline) => update({ pipeline, view: undefined, columns: undefined, timeColumn: undefined })} />
-      {!query.pipeline && datasource.defaultPipeline && <div>Using datasource default: {datasource.defaultPipeline}</div>}
+      {!query.pipeline && datasource.defaultPipeline && <Text color="secondary">Using datasource default: {datasource.defaultPipeline}</Text>}
       <ViewSelector
         datasource={datasource}
         pipeline={selectedPipeline}
@@ -47,9 +47,13 @@ export function QueryEditor({ datasource, query, onChange, onRunQuery }: Props) 
           onChange={(option) => update({ timeColumn: option?.value })}
         />
       </InlineField>
-      <Button variant="secondary" disabled={!selectedView} onClick={() => update({ queryText: buildSelectQuery(selectedView?.name, query.columns, query.timeColumn) })}>
-        Generate query
-      </Button>
+      <Tooltip content="Select a view to generate a query.">
+        <span>
+          <Button variant="secondary" disabled={!selectedView} onClick={() => update({ queryText: buildSelectQuery(selectedView?.name, query.columns, query.timeColumn) })}>
+            Generate query
+          </Button>
+        </span>
+      </Tooltip>
       <Divider spacing={1} />
       <Text element="h6" color="secondary">Query</Text>
       <CodeEditor
