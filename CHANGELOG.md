@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.1.0
+
+First production release. Validated against Grafana managed alerting and Feldera Arrow query results.
+
 ## 0.0.9
 
 - Refine query builder layout and controls.

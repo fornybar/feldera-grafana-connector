@@ -4,7 +4,7 @@ Grafana datasource for querying [Feldera](https://www.feldera.com/) materialized
 
 ## Status
 
-Initial public prototype. Use in development/testing before relying on it for production dashboards or alerts.
+Initial production release. Validated with Grafana managed alerting and Feldera Arrow query results.
 
 ## Features
 
