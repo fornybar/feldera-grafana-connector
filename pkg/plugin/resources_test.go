@@ -4,14 +4,14 @@ import "testing"
 
 func TestPipelineNamesStripsPipelineDefinitions(t *testing.T) {
 	pipelines, err := pipelineNames([]byte(`[
-		{"name":"power","program_code":"CREATE VIEW secret AS SELECT 1","runtime_config":{"workers":4}},
+		{"name":"power","deployment_status":"RUNNING","program_code":"CREATE VIEW secret AS SELECT 1","runtime_config":{"workers":4}},
 		{"name":"overview"},
 		{"program_code":"missing name"}
 	]`))
 	if err != nil {
 		t.Fatal(err)
 	}
-	if len(pipelines) != 2 || pipelines[0].Name != "power" || pipelines[1].Name != "overview" {
+	if len(pipelines) != 2 || pipelines[0].Name != "power" || pipelines[0].Status != "RUNNING" || pipelines[1].Name != "overview" {
 		t.Fatalf("unexpected pipelines: %#v", pipelines)
 	}
 }

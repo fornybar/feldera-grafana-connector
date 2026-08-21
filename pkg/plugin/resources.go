@@ -59,20 +59,29 @@ func (d *Datasource) CallResource(ctx context.Context, req *backend.CallResource
 }
 
 type pipelineInfo struct {
-	Name string `json:"name"`
+	Name             string          `json:"name"`
+	DeploymentStatus json.RawMessage `json:"deployment_status"`
+}
+
+type pipelineSummary struct {
+	Name   string `json:"name"`
+	Status string `json:"status,omitempty"`
 }
 
 // pipelineNames keeps pipeline configuration backend-only.
-func pipelineNames(body []byte) ([]pipelineInfo, error) {
+func pipelineNames(body []byte) ([]pipelineSummary, error) {
 	var pipelines []pipelineInfo
 	if err := json.Unmarshal(body, &pipelines); err != nil {
 		return nil, err
 	}
-	result := make([]pipelineInfo, 0, len(pipelines))
+	result := make([]pipelineSummary, 0, len(pipelines))
 	for _, pipeline := range pipelines {
-		if pipeline.Name != "" {
-			result = append(result, pipeline)
+		if pipeline.Name == "" {
+			continue
 		}
+		var status string
+		_ = json.Unmarshal(pipeline.DeploymentStatus, &status)
+		result = append(result, pipelineSummary{Name: pipeline.Name, Status: status})
 	}
 	return result, nil
 }

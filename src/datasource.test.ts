@@ -2,9 +2,9 @@ import { DataSource } from './datasource';
 
 describe('DataSource.getPipelines', () => {
   it('extracts and sorts only named pipeline records', async () => {
-    const getResource = jest.fn().mockResolvedValue([{ name: 'zeta' }, {}, { name: 'alpha' }, { name: 3 }]);
+    const getResource = jest.fn().mockResolvedValue([{ name: 'zeta' }, {}, { name: 'alpha', status: 'RUNNING' }, { name: 3 }]);
     const result = await DataSource.prototype.getPipelines.call({ getResource } as unknown as DataSource);
-    expect(result).toEqual(['alpha', 'zeta']);
+    expect(result).toEqual([{ name: 'alpha', status: 'RUNNING' }, { name: 'zeta' }]);
     expect(getResource).toHaveBeenCalledWith('pipelines');
   });
 

@@ -1,7 +1,7 @@
 import { DataSourceInstanceSettings, ScopedVars } from '@grafana/data';
 import { DataSourceWithBackend, getTemplateSrv } from '@grafana/runtime';
 
-import { FelderaQuery, FelderaOptions, FelderaView } from './types';
+import { FelderaPipeline, FelderaQuery, FelderaOptions, FelderaView } from './types';
 
 export class DataSource extends DataSourceWithBackend<FelderaQuery, FelderaOptions> {
   readonly defaultPipeline?: string;
@@ -11,15 +11,14 @@ export class DataSource extends DataSourceWithBackend<FelderaQuery, FelderaOptio
     this.defaultPipeline = instanceSettings.jsonData.pipeline?.trim() || undefined;
   }
 
-  async getPipelines(): Promise<string[]> {
+  async getPipelines(): Promise<FelderaPipeline[]> {
     const response = await this.getResource<unknown>('pipelines');
     if (!Array.isArray(response)) {
       return [];
     }
     return response
-      .map((item) => (typeof item === 'object' && item !== null && 'name' in item ? (item as { name?: unknown }).name : undefined))
-      .filter((name): name is string => typeof name === 'string')
-      .sort((left, right) => left.localeCompare(right));
+      .filter((item): item is FelderaPipeline => typeof item === 'object' && item !== null && typeof (item as FelderaPipeline).name === 'string')
+      .sort((left, right) => left.name.localeCompare(right.name));
   }
 
   async getViews(pipeline: string): Promise<FelderaView[]> {

@@ -9,6 +9,11 @@ export interface FelderaQuery extends DataQuery {
   timeColumn?: string;
 }
 
+export interface FelderaPipeline {
+  name: string;
+  status?: string;
+}
+
 export interface FelderaColumn {
   name: string;
 }
