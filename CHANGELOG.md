@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.0.5
+
+- Upgrade Grafana 13 development tooling and remove deprecated dependency chains.
+
 ## 0.0.4
 
 - Keep pipeline selection available in SQL and builder modes.

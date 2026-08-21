@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import { QueryEditorProps } from '@grafana/data';
 import { Button, CodeEditor, InlineField, Input, Tooltip } from '@grafana/ui';
 import { DataSource } from '../datasource';
@@ -11,23 +11,23 @@ import { ViewSelector } from './ViewSelector';
 type Props = QueryEditorProps<DataSource, FelderaQuery, FelderaOptions>;
 
 export function QueryEditor({ datasource, query, onChange, onRunQuery }: Props) {
-  const [selectedView, setSelectedView] = useState<FelderaView>();
+  const [selectedViewState, setSelectedViewState] = useState<{ pipeline?: string; view?: FelderaView }>({});
   const mode = query.mode ?? 'sql';
   const limit = query.limit ?? 100;
   const selectedPipeline = query.pipeline || datasource.defaultPipeline;
+  const selectedView = selectedViewState.pipeline === selectedPipeline ? selectedViewState.view : undefined;
   const update = (patch: Partial<FelderaQuery>) => onChange({ ...query, ...patch });
 
-  useEffect(() => setSelectedView(undefined), [selectedPipeline]);
   const rehydrateView = useCallback((views: FelderaView[]) => {
-    setSelectedView(views.find((view) => view.name === query.view));
-  }, [query.view]);
+    setSelectedViewState({ pipeline: selectedPipeline, view: views.find((view) => view.name === query.view) });
+  }, [query.view, selectedPipeline]);
 
   const updateBuilderQuery = (patch: Partial<FelderaQuery>, view = selectedView, columns = query.columns ?? [], nextLimit = limit) => {
     update({ ...patch, queryText: buildSelectQuery(view?.name, columns, nextLimit) });
   };
 
   const selectView = (view: FelderaView) => {
-    setSelectedView(view);
+    setSelectedViewState({ pipeline: selectedPipeline, view });
     updateBuilderQuery({ view: view.name, columns: [] }, view, []);
   };
 

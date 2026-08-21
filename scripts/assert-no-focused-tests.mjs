@@ -13,7 +13,9 @@ const tests = (await files('src')).filter((path) => /\.(test|spec)\.[jt]sx?$/.te
 const focused = [];
 for (const path of tests) {
   const text = await readFile(path, 'utf8');
-  if (/\b(?:describe|it|test)\.only\s*\(/.test(text)) focused.push(path);
+  if (/\b(?:describe|it|test)\.only\s*\(/.test(text)) {
+    focused.push(path);
+  }
 }
 if (focused.length) {
   console.error(`Focused tests prohibited in CI:\n${focused.join('\n')}`);

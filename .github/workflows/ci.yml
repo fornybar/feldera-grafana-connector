@@ -20,7 +20,7 @@ jobs:
           node-version: 22
           cache: npm
       - run: gofmt -d pkg | (! grep .)
-      - run: go test ./...
+      - run: go test ./pkg/...
       - run: npm ci
       - run: npm run lint
       - run: npm run test:ci

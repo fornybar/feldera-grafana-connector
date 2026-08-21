@@ -18,8 +18,7 @@ export function ViewSelector({ datasource, pipeline, value, onSelect, onViewsLoa
   useEffect(() => {
     let active = true;
     if (!pipeline) {
-      setViews([]);
-      setDiscoveryFailed(false);
+      onViewsLoaded([]);
       return () => { active = false; };
     }
     datasource.getViews(pipeline).then(
@@ -41,7 +40,7 @@ export function ViewSelector({ datasource, pipeline, value, onSelect, onViewsLoa
     return () => { active = false; };
   }, [datasource, onViewsLoaded, pipeline]);
 
-  const options = views.map((view) => ({
+  const options = (pipeline ? views : []).map((view) => ({
     label: view.name,
     value: view.name,
     view,
@@ -59,7 +58,7 @@ export function ViewSelector({ datasource, pipeline, value, onSelect, onViewsLoa
           onChange={(option) => option?.view && onSelect(option.view)}
         />
       </InlineField>
-      {discoveryFailed && <div role="alert">Could not load views for this pipeline.</div>}
+      {pipeline && discoveryFailed && <div role="alert">Could not load views for this pipeline.</div>}
     </>
   );
 }
