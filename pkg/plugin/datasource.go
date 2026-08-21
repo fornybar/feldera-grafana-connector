@@ -11,7 +11,6 @@ import (
 	"github.com/fornybar/feldera-grafana-connector/pkg/models"
 	"github.com/grafana/grafana-plugin-sdk-go/backend"
 	"github.com/grafana/grafana-plugin-sdk-go/backend/instancemgmt"
-	"github.com/grafana/grafana-plugin-sdk-go/backend/log"
 	"github.com/grafana/grafana-plugin-sdk-go/data"
 )
 
@@ -85,7 +84,6 @@ func (d *Datasource) query(ctx context.Context, query backend.DataQuery) backend
 	}
 	frame, err := frameFromFelderaArrow(body)
 	if err != nil {
-		log.DefaultLogger.Info("Falling back to Feldera JSON result", "reason", "arrowDecodeFailed")
 		body, jsonErr := d.client.Query(ctx, pipeline, sql)
 		if jsonErr != nil {
 			return backend.ErrDataResponse(backend.StatusBadGateway, jsonErr.Error())

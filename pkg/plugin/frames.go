@@ -9,7 +9,6 @@ import (
 	"github.com/apache/arrow-go/v18/arrow"
 	"github.com/apache/arrow-go/v18/arrow/array"
 	"github.com/apache/arrow-go/v18/arrow/ipc"
-	"github.com/grafana/grafana-plugin-sdk-go/backend/log"
 	"github.com/grafana/grafana-plugin-sdk-go/data"
 	"github.com/grafana/infinity-libs/lib/go/jsonframer"
 )
@@ -36,7 +35,6 @@ func frameFromFelderaArrow(body []byte) (*data.Frame, error) {
 	if reader.Err() != nil {
 		return nil, fmt.Errorf("read Feldera Arrow IPC stream: %w", reader.Err())
 	}
-	log.DefaultLogger.Info("Decoded Feldera Arrow result", "transport", "stream")
 	return frame, nil
 }
 
