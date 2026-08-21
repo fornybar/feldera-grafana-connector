@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.0.8
+
+- Show selected pipeline status in query builder.
+
 ## 0.0.7
 
 - Simplify the query builder and add optional generated time constraints.
