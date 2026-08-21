@@ -1,6 +1,6 @@
 {
   "name": "feldera-datasource-connector",
-  "version": "0.0.8",
+  "version": "0.0.9",
   "scripts": {
     "build": "webpack -c ./.config/webpack/webpack.config.ts --env production",
     "package": "bash scripts/package.sh",

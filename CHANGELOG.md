@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.0.9
+
+- Refine query builder layout and controls.
+
 ## 0.0.8
 
 - Show selected pipeline status in query builder.
